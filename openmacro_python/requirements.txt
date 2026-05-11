@@ -1,0 +1,6 @@
+customtkinter>=5.2.0
+pymem>=1.13.0
+requests>=2.31.0
+keyboard>=0.13.5
+pynput>=1.7.6
+Pillow>=10.0.0
