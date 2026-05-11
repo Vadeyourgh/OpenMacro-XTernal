@@ -48,6 +48,7 @@ class OpenMacroApp(ctk.CTk):
         self.geometry("480x720")
         self.minsize(460, 650)
         self.resizable(True, True)
+        self.attributes("-topmost", True)  # Always on top
 
         # Core objects
         self.game = GameMemory()
@@ -197,7 +198,16 @@ class OpenMacroApp(ctk.CTk):
     # === Public API ===
 
     def toggle_macro(self):
-        """Toggle the macro on/off."""
+        """Toggle the macro on/off (thread-safe, can be called from hotkey thread)."""
+        # Use after() to ensure we run on the main thread
+        try:
+            self.after(0, self._toggle_macro_main_thread)
+        except Exception:
+            # If called before mainloop, just run directly
+            self._toggle_macro_main_thread()
+
+    def _toggle_macro_main_thread(self):
+        """Actual toggle logic, runs on main thread."""
         if self.macro.cycle_enabled:
             self._stop_macro()
         else:
@@ -245,14 +255,28 @@ class OpenMacroApp(ctk.CTk):
         self.macro.phase = "OFF"
 
     def _stop_appraise(self):
-        """Stop appraise from hotkey."""
+        """Stop appraise from hotkey (thread-safe)."""
+        try:
+            self.after(0, self._stop_appraise_main_thread)
+        except Exception:
+            self._stop_appraise_main_thread()
+
+    def _stop_appraise_main_thread(self):
+        """Actual stop appraise logic."""
         if self.macro.phase == "APPRAISE" and self.macro.cycle_enabled:
             self.appraise_mgr.stop_cycle(self.macro, "Stopped by hotkey.")
             self._macro_running = False
             self.appraisal_tab.set_status("Stopped by hotkey.")
 
     def fix_roblox(self):
-        """Re-attach to Roblox."""
+        """Re-attach to Roblox (thread-safe)."""
+        try:
+            self.after(0, self._fix_roblox_main_thread)
+        except Exception:
+            self._fix_roblox_main_thread()
+
+    def _fix_roblox_main_thread(self):
+        """Actual fix roblox logic."""
         self.game.reset_cache()
         try:
             pid = self.game.process.get_roblox_pid()
