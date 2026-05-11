@@ -138,7 +138,7 @@ def get_default_settings():
             "cast_mode": "short",
             "cast_power_custom": 96.0,
             "cast_timeout_ms": 15000,
-            "pre_cast_delay_ms": 0,
+            "pre_cast_delay_ms": 400,
             "post_cast_delay_ms": 150,
             "cast_on_timeout": 1,
             "fishing_action_delay_ms": 0,

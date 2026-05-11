@@ -31,6 +31,7 @@ class MacroState:
     fish_lost_count: int = 0
     cast_timeout_count: int = 0
     totem_pop_count: int = 0
+    done_at: float = 0
     shaking_interval_ms: int = 25
     last_shaked_at: float = 0
     last_action_at: float = 0

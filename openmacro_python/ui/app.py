@@ -24,6 +24,7 @@ from .tabs.home_tab import HomeTab
 from .tabs.appraisal_tab import AppraisalTab
 from .tabs.settings_tab import SettingsTab
 from .tabs.webhook_tab import WebhookTab
+from .tabs.advanced_tab import AdvancedTab
 from .tabs.about_tab import AboutTab
 
 
@@ -111,6 +112,7 @@ class OpenMacroApp(ctk.CTk):
         # Create tabs
         self.tabview.add("Home")
         self.tabview.add("Appraisal")
+        self.tabview.add("Advanced")
         self.tabview.add("Webhook")
         self.tabview.add("Settings")
         self.tabview.add("About")
@@ -121,6 +123,9 @@ class OpenMacroApp(ctk.CTk):
 
         self.appraisal_tab = AppraisalTab(self.tabview.tab("Appraisal"), self)
         self.appraisal_tab.pack(fill="both", expand=True)
+
+        self.advanced_tab = AdvancedTab(self.tabview.tab("Advanced"), self)
+        self.advanced_tab.pack(fill="both", expand=True)
 
         self.webhook_tab = WebhookTab(self.tabview.tab("Webhook"), self)
         self.webhook_tab.pack(fill="both", expand=True)
@@ -322,6 +327,15 @@ class OpenMacroApp(ctk.CTk):
                     self._update_shake()
                 elif self.macro.phase == "DONE":
                     if self.macro.cycle_enabled:
+                        # Wait for pre-cast delay before restarting
+                        pre_cast_delay = max(0, int(self.main_settings.get("pre_cast_delay_ms", 400)))
+                        if self.macro.done_at == 0:
+                            self.macro.done_at = time.time()
+                        elapsed_since_done = (time.time() - self.macro.done_at) * 1000
+                        if elapsed_since_done < pre_cast_delay:
+                            time.sleep(0.01)
+                            continue
+                        self.macro.done_at = 0
                         self._restart_cast()
                     else:
                         self._macro_running = False
