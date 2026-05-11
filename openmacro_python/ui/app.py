@@ -186,7 +186,7 @@ class OpenMacroApp(ctk.CTk):
             self.start_btn.configure(text="Stop Macro (F1)", fg_color="#ff4c4c")
         else:
             self.status_indicator.configure(text="OFF", text_color="#ff4c4c")
-            self.start_btn.configure(text="Start Macro (F1)", fg_color=None)
+            self.start_btn.configure(text="Start Macro (F1)", fg_color=("#3B8ED0", "#1F6AA5"))
 
         # Update home tab
         self.home_tab.update_status(self.macro)
